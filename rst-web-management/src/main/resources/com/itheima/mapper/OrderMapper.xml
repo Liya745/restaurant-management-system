@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.OrderMapper">
+
+    <select id="conditionQueryOrder" resultType="com.itheima.pojo.Order">
+        select order_id, rstuser_id, dish_id, order_time, quantity, total_price, userName, dishName from rstorder
+        where userName like concat('%',#{userName},'%')
+        and dishName like concat('%',#{dishName},'%')
+    </select>
+
+</mapper>
