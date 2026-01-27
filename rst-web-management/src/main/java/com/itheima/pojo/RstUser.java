@@ -14,7 +14,7 @@ public class RstUser {
     private Integer gender;
     private String phone;
     private String password;
-    private Integer avater;
+    private String avatar;
     private Integer level;
     private Integer signInCount;
 }

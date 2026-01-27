@@ -10,19 +10,19 @@ import java.util.List;
 
 @Mapper
 public interface RstUserMapper {
-    @Select("select id, username, age, gender, phone, password, avater, level, signInCount from RstUser")
+    @Select("select id, username, age, gender, phone, password, avatar, level, signInCount from RstUser")
     List<RstUser> findAll();
 
     @Delete("delete from rstuser where id = #{id}")
     void deleteRstUserById(Integer id);
 
-    @Insert("insert into rstuser(username, age, gender, phone, password, avater, level, signInCount) values (#{username},#{age},#{gender},#{phone},#{password},#{avater},#{level},#{signInCount}) ")
+    @Insert("insert into rstuser(username, age, gender, phone, password, avatar, level, signInCount) values (#{username},#{age},#{gender},#{phone},#{password},#{avatar},#{level},#{signInCount}) ")
     void addRstUser(RstUser rstUser);
 
-    @Select("select id, username, age, gender, phone, password, avater, level, signInCount from rstuser where id = #{id}")
+    @Select("select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser where id = #{id}")
     RstUser queryRstUserById(Integer id);
 
-    @Update("update rstuser set username = #{username}, phone = #{phone}, avater = #{avater} where id = #{id}")
+    @Update("update rstuser set username = #{username}, phone = #{phone}, avatar = #{avatar} where id = #{id}")
     void updateRstUserById(RstUser rstUser);
 
     /**
@@ -32,7 +32,7 @@ public interface RstUserMapper {
     @Select("select count(*) from rstuser")
     public Long count();
 
-    @Select("select id, username, age, gender, phone, password, avater, level, signInCount from rstuser limit #{start},#{pageSize}")
+    @Select("select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser limit #{start},#{pageSize}")
     public List<RstUser> paginationQueryRstUser(Integer start, Integer pageSize);
 
     List<RstUser> conditionQueryRstUser(RstUserQueryPara rstUserQueryPara);

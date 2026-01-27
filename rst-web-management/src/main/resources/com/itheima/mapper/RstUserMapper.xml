@@ -5,35 +5,35 @@
 <mapper namespace="com.itheima.mapper.RstUserMapper">
 
     <select id="conditionQueryRstUser" resultType="com.itheima.pojo.RstUser">
-        select id, username, age, gender, phone, password, avater, level, signInCount from rstuser
+        select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser
         where
         username like concat('%',#{username},'%')
         and gender = #{gender}
         and phone = #{phone}
     </select>
     <select id="conditionQueryRstUserGenderIsNull" resultType="com.itheima.pojo.RstUser">
-        select id, username, age, gender, phone, password, avater, level, signInCount from rstuser
+        select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser
         where
             username like concat('%',#{username},'%')
           and phone = #{phone}
     </select>
     <select id="conditionQueryRstUserPhoneIsNull" resultType="com.itheima.pojo.RstUser">
-        select id, username, age, gender, phone, password, avater, level, signInCount from rstuser
+        select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser
         where
             username like concat('%',#{username},'%')
           and gender = #{gender}
     </select>
     <select id="conditionQueryRstUserGenderAndPhoneAreNull" resultType="com.itheima.pojo.RstUser">
-        select id, username, age, gender, phone, password, avater, level, signInCount from rstuser
+        select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser
         where
             username like concat('%',#{username},'%')
     </select>
     <select id="queryRstUserByRstUserName" resultType="com.itheima.pojo.RstUser">
-        select id, username, age, gender, phone, password, avater, level, signInCount from rstuser
+        select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser
         where username = #{userName}
     </select>
     <select id="dynamicSqlTest" resultType="com.itheima.pojo.RstUser">
-        select id, username, age, gender, phone, password, avater, level, signInCount from rstuser
+        select id, username, age, gender, phone, password, avatar, level, signInCount from rstuser
         <where>
             <if test="username != null and username != ''">
                 username like concat('%',#{username},'%')

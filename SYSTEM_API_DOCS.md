@@ -40,7 +40,7 @@
 | `gender` | Integer | 性别 (1:男, 2:女, 0:未知) |
 | `phone` | String | 手机号 |
 | `password` | String | 登录密码 |
-| `avater` | Integer | 头像 ID/标识 |
+| `avatar` | String | 用户头像 URL 链接地址 |
 | `level` | Integer | 会员等级 |
 | `signInCount`| Integer | 签到次数 |
 
