@@ -179,11 +179,19 @@
 
 ### 4.6 文件上传 (UploadController)
 
-#### 4.6.1 上传文件到云端 (OSS)
+#### 4.6.1 上传文件到云端并更新头像 (OSS)
 - **URL**: `/upload`
 - **Method**: `POST`
-- **Body**: `multipart/form-data` (file 字段)
-- **返回**: 成功后返回文件的绝对 URL 地址。
+- **Content-Type**: `multipart/form-data`
+- **请求参数**:
+  - `file` (必填): 要上传的文件
+  - `userId` (可选): 用户ID，如果传入则自动更新该用户的头像
+- **响应**:
+  - 成功: 返回文件的完整 URL 地址
+  - 失败: 如果 userId 不存在，返回错误信息 "用户不存在"
+- **说明**: 
+  - 仅上传文件时，不传 userId 参数
+  - 上传并保存头像时，必须传入 userId
 
 ---
 

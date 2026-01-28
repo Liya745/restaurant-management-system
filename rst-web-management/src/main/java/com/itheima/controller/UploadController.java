@@ -2,10 +2,13 @@ package com.itheima.controller;
 
 
 import com.itheima.pojo.Result;
+import com.itheima.pojo.RstUser;
+import com.itheima.service.RstUserService;
 import com.itheima.utils.AliyunOSSOperator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,12 +44,41 @@ public class UploadController {
     @Autowired
     private AliyunOSSOperator aliyunOSSOperator;
 
+    @Autowired
+    private RstUserService rstUserService;
+
+    /**
+     * 上传文件并更新用户头像
+     * @param file 头像文件
+     * @param userId 用户ID（可选）
+     * @return 返回头像URL
+     * @throws Exception
+     */
     @PostMapping("/upload")
-    public Result upload(MultipartFile file) throws Exception {
+    public Result upload(MultipartFile file, @RequestParam(required = false) Integer userId) throws Exception {
         log.info("文件上传：{}", file.getOriginalFilename());
-        //需要将文件交给oss来存储管理
+        
+        // 将文件上传到 OSS
         String url = aliyunOSSOperator.upload(file.getBytes(), file.getOriginalFilename());
         log.info("文件上传到OSS，url：{}", url);
+        
+        // 如果传入了 userId，则更新用户头像
+        if (userId != null) {
+            log.info("开始更新用户 {} 的头像", userId);
+            
+            // 查询用户是否存在
+            RstUser user = rstUserService.queryRstUserById(userId);
+            if (user == null) {
+                log.error("用户ID {} 不存在", userId);
+                return Result.error("用户不存在");
+            }
+            
+            // 更新用户头像
+            user.setAvatar(url);
+            rstUserService.updateRstUserById(user);
+            log.info("用户 {} 头像更新成功：{}", userId, url);
+        }
+        
         return Result.success(url);
     }
 }
