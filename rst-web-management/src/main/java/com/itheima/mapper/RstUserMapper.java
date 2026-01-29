@@ -46,4 +46,12 @@ public interface RstUserMapper {
     RstUser queryRstUserByRstUserName(String rstUserName);
 
     List<RstUser> dynamicSqlTest(RstUserQueryPara rstUserQueryPara);
+
+    /**
+     * 根据用户名和密码查询员工信息
+     * @param rstUser
+     * @return
+     */
+    @Select("select id, username from rstuser where username = #{username} and password = #{password}")
+    RstUser queryRstUserByUsernameAndPassword(RstUser rstUser);
 }

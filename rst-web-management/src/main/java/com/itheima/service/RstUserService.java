@@ -1,9 +1,6 @@
 package com.itheima.service;
 
-import com.itheima.pojo.PageResult;
-import com.itheima.pojo.Result;
-import com.itheima.pojo.RstUser;
-import com.itheima.pojo.RstUserQueryPara;
+import com.itheima.pojo.*;
 
 import java.util.List;
 
@@ -66,4 +63,12 @@ public interface RstUserService {
      * @return
      */
     PageResult<RstUser> dynamicSqlTest(RstUserQueryPara rstUserQueryPara);
+
+
+    /**
+     * 员工登陆
+     * @param rstUser
+     * @return
+     */
+    LoginInfo login(RstUser rstUser);
 }

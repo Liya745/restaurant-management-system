@@ -3,17 +3,19 @@ package com.itheima.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.itheima.mapper.RstUserMapper;
-import com.itheima.pojo.PageResult;
-import com.itheima.pojo.Result;
-import com.itheima.pojo.RstUser;
-import com.itheima.pojo.RstUserQueryPara;
+import com.itheima.pojo.*;
 import com.itheima.service.RstUserService;
+import com.itheima.utils.JwtUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class RstUserServiceImpl implements RstUserService {
 
@@ -116,6 +118,27 @@ public class RstUserServiceImpl implements RstUserService {
         List<RstUser> rstUserList = rstUserMapper.dynamicSqlTest(rstUserQueryPara);
         Page<RstUser> p = (Page<RstUser>)rstUserList;
         return new PageResult<RstUser>(p.getTotal(),p.getResult());
+    }
+
+    @Override
+    public LoginInfo login(RstUser rstUser) {
+        //调用mapper接口，查询员工
+        RstUser user = rstUserMapper.queryRstUserByUsernameAndPassword(rstUser);
+        //判断是否存在用户，如果存在，组装成功信息
+        if (user != null) {
+            log.info("登陆成功，员工信息: {}" , user);
+
+            //生成jwt令牌
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", user.getId());
+            claims.put("username", user.getUsername());
+
+            String token = JwtUtils.generateToken(claims);
+            //存在，组装成功信息
+            return new LoginInfo(user.getId(), user.getUsername(), token);
+        }
+        //不存在返回null
+        return null;
     }
 }
 

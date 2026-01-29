@@ -20,7 +20,15 @@
 | `msg` | String | 提示信息或错误消息 |
 | `data` | Object | 业务数据 (可能为数组、对象或 null) |
 
-### 2.2 分页数据 (PageResult)
+### 2.2 JWT 令牌认证
+系统使用JWT (JSON Web Token) 进行身份验证：
+- 登录成功后，服务器会返回包含用户信息的JWT令牌
+- 后续请求需要在请求头中添加 `Authorization` 字段，值为 `Bearer {token}`
+- JWT令牌有效期为2小时，过期后需要重新登录
+- 前端应妥善保管JWT令牌，建议存储在localStorage或sessionStorage中
+
+
+### 2.3 分页数据 (PageResult)
 列表分页查询时，`Result.data` 中会包含此对象：
 | 字段 | 类型 | 说明 |
 | :--- | :--- | :--- |
@@ -44,7 +52,15 @@
 | `level` | Integer | 会员等级 |
 | `signInCount`| Integer | 签到次数 |
 
-### 3.2 菜品 (Dish)
+### 3.2 登录信息 (LoginInfo)
+| 字段 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `id` | Integer | 用户ID |
+| `username` | String | 用户名 |
+| `token` | String | 登录JWT令牌 |
+
+
+### 3.3 菜品 (Dish)
 | 字段 | 类型 | 说明 |
 | :--- | :--- | :--- |
 | `id` | Integer | 菜品 ID |
@@ -54,7 +70,7 @@
 | `remain` | int | 库存剩余数量 |
 | `intro` | String | 菜品简介 |
 
-### 3.3 订单 (Order)
+### 3.4 订单 (Order)
 | 字段 | 类型 | 说明 |
 | :--- | :--- | :--- |
 | `orderId` | Integer | 订单 ID |
@@ -72,25 +88,39 @@
 
 ### 4.1 用户管理 (RstUserController)
 
-#### 4.1.1 用户登录
+#### 4.1.1 用户登录 (新 - 带JWT令牌)
+- **URL**: `/login`
+- **Method**: `POST`
+- **Content-Type**: `application/json`
+- **Body**: `RstUser` 对象 (包含 `username` 和 `password`)
+- **说明**: 登录成功后会生成JWT令牌(token)，用于后续身份验证。
+- **响应**: 
+  - 成功: 返回 `LoginInfo` 对象，包含用户ID、用户名和JWT令牌
+  - 失败: 返回错误信息 "用户名或密码错误"
+
+#### 4.1.2 用户登录 (旧 - 已弃用)
 - **URL**: `/RstUserSignIn`
 - **Method**: `POST`
 - **Params (Query)**:
   - `rstUserName`: 用户名
   - `password`: 密码
-- **说明**: 验证成功返回用户信息。
+- **说明**: 此接口已弃用，不再推荐使用。验证成功返回用户信息，但不包含JWT令牌。
+- **响应**: 
+  - 成功: 返回 `RstUser` 对象
+  - 失败: 返回错误信息 "此用户不存在" 或 "密码错误"
+- **注意**: 建议使用新的 `/login` 接口，该接口支持JWT令牌认证。
 
-#### 4.1.2 获取所有用户
+#### 4.1.3 获取所有用户
 - **URL**: `/RstUsers`
 - **Method**: `GET`
-- **说明**: 返回所有用户的完整列表。
+- **说明**: 返回所有用户的完整列表.
 
-#### 4.1.3 新增用户
+#### 4.1.4 新增用户
 - **URL**: `/addRstUser`
 - **Method**: `POST`
 - **Body**: `RstUser` 对象
 
-#### 4.1.4 分页/条件查询用户
+#### 4.1.5 分页/条件查询用户
 - **URL**: `/conditionQueryRstUser`
 - **Method**: `POST`
 - **Body**: `RstUserQueryPara` (支持 page, pageSize, username, gender, phone 等模糊查询)
@@ -202,3 +232,7 @@
    - 如果后端使用 `@RequestParam`，前端应使用 Query String 或 `application/x-www-form-urlencoded`。
 2. **错误处理**: 始终检查响应中的 `code`。若为 `0`，请在界面弹出 `msg` 提示。
 3. **数据一致性**: 下单前建议先调用菜品详情接口确认 `remain` (库存) 是否充足。
+4. **JWT令牌认证**:
+   - 登录成功后，将返回的JWT令牌存储在localStorage或sessionStorage中
+   - 后续受保护的接口调用时，需要在请求头中添加 `Authorization: Bearer {token}`
+   - 监听登录状态，当令牌过期或无效时，引导用户重新登录
