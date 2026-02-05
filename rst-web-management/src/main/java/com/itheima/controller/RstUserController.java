@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.anno.LogOperation;
 import com.itheima.pojo.PageResult;
 import com.itheima.pojo.Result;
 import com.itheima.pojo.RstUser;
@@ -29,6 +30,7 @@ public class RstUserController {
      * @param id
      * @return
      */
+    @LogOperation
     @DeleteMapping("/deleteRstUserById")
     public Result delete(@RequestParam(value = "id",required = false) Integer id){
         System.out.println("根据id删除用户会员：" + id);
@@ -36,6 +38,7 @@ public class RstUserController {
         return Result.success();
     }
 
+    @LogOperation
     @PostMapping("/addRstUser")
     public Result addRstUser(@RequestBody RstUser rstUser){
         System.out.println("新增用户：" + rstUser);
@@ -50,6 +53,7 @@ public class RstUserController {
         return Result.success(rstUser);
     }
 
+    @LogOperation
     @PostMapping("/updateRstUserById")
     public Result updateRstUserById(@RequestBody RstUser rstUser){
         System.out.println("修改用户：" + rstUser);

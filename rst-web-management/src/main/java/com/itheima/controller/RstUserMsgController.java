@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.anno.LogOperation;
 import com.itheima.pojo.Result;
 import com.itheima.service.RstUserMsgService;
 import com.itheima.service.RstUserService;
@@ -25,6 +26,7 @@ public class RstUserMsgController {
         return Result.success();
     }
 
+    @LogOperation
     @PostMapping("/RstUserRechargeBalance")
     public Result RstUserRechargeBalance(@RequestParam Integer id, @RequestParam double rechargeAmount){
         rstUserMsgService.RstUserRechargeBalance(id,rechargeAmount);

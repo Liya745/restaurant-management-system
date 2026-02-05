@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.anno.LogOperation;
 import com.itheima.pojo.Result;
 import com.itheima.service.RstUserCollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ public class RstUserCollectionController {
     @Autowired
     RstUserCollectionService rstUserCollectionService;
 
+    @LogOperation
     @PostMapping("/addRstUserCollection")
     public Result addRstUserCollection(@RequestParam Integer rstuserId, @RequestParam Integer dishId){
         rstUserCollectionService.addRstUserCollection(rstuserId,dishId);
@@ -37,6 +39,7 @@ public class RstUserCollectionController {
         return Result.success(result.getData());
     }
 
+    @LogOperation
     @PostMapping("/deleteRstUserCollectionByRstuserId")
     public Result deleteRstUserCollectionByRstuserId(@RequestParam Integer rstuserId,@RequestParam Integer dishId){
         rstUserCollectionService.deleteRstUserCollectionByRstuserId(rstuserId,dishId);

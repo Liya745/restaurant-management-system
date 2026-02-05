@@ -1,6 +1,7 @@
 package com.itheima.controller;
 
 
+import com.itheima.anno.LogOperation;
 import com.itheima.pojo.Result;
 import com.itheima.pojo.RstUser;
 import com.itheima.service.RstUserService;
@@ -54,6 +55,7 @@ public class UploadController {
      * @return 返回头像URL
      * @throws Exception
      */
+    @LogOperation
     @PostMapping("/upload")
     public Result upload(MultipartFile file, @RequestParam(required = false) Integer userId) throws Exception {
         log.info("文件上传：{}", file.getOriginalFilename());

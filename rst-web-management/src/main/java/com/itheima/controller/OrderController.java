@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.anno.LogOperation;
 import com.itheima.mapper.OrderMapper;
 import com.itheima.pojo.Order;
 import com.itheima.pojo.OrderQueryPara;
@@ -25,6 +26,7 @@ public class OrderController {
         return Result.success(orderList);
     }
 
+    @LogOperation
     @PostMapping("/addOrder")
     public Result addDish(@RequestBody Order order){
         Result result =  orderService.addOrder(order);
@@ -39,12 +41,14 @@ public class OrderController {
         return Result.error("--正常情况不会输出此语句--");
     }
 
+    @LogOperation
     @PostMapping("/deleteOrderById")
     public Result deleteOrderById(@RequestBody Order order){
         orderService.deleteOrderById(order);
         return Result.success();
     }
 
+    @LogOperation
     @PostMapping("/updateOrderById")
     public Result updateOrderById(@RequestBody Order order, Integer originalOrderId){
         Result result = orderService.updateOrderById(order, originalOrderId);

@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.anno.LogOperation;
 import com.itheima.pojo.Dish;
 import com.itheima.pojo.DishQueryPara;
 import com.itheima.pojo.PageResult;
@@ -22,12 +23,14 @@ public class DishController {
         return Result.success(dishList);
     }
 
+    @LogOperation
     @PostMapping("/addDish")
     public Result addDish(@RequestBody Dish dish){
         dishService.addDish(dish);
         return Result.success();
     }
 
+    @LogOperation
     @PostMapping("/deleteDishById")
     public Result deleteDishById(@RequestParam(value = "id", required = true) Integer id){
         System.out.println("根据ID删除菜品：" +id);
@@ -35,6 +38,7 @@ public class DishController {
         return Result.success();
     }
 
+    @LogOperation
     @PostMapping("/updateDishById")
     public Result updateDishById(@RequestBody Dish dish){
         System.out.println("根据ID更改菜品：");

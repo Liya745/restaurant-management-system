@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.anno.LogOperation;
 import com.itheima.mapper.DishMapper;
 import com.itheima.pojo.DishComments;
 import com.itheima.pojo.MyComments;
@@ -24,6 +25,7 @@ public class DishCommentsCotroller {
     @Autowired
     private DishMapper dishMapper;
 
+    @LogOperation
     @PostMapping("/addDishComments")
     public Result addDishComments(@RequestParam Integer rstuserId, @RequestParam Integer dishId, @RequestParam String userComment){
         dishCommentsService.addDishComments(rstuserId,dishId,userComment);

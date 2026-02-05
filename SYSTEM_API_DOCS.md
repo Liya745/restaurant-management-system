@@ -1,7 +1,7 @@
 # 餐厅服务管理系统 API 接口文档 (v2.1)
 
 ## 1. 项目概述
-本项目是餐厅服务管理系统的后端 API，基于 Spring Boot 框架开发。文档旨在为前端开发人员提供清晰、准确的接口调用说明，同时包含系统的过滤器、拦截器、AOP等技术组件的详细信息。
+本项目是餐厅服务管理系统的后端 API，基于 Spring Boot 框架开发。文档旨在为前端开发人员提供清晰、准确的接口调用说明,同时包含系统的过滤器、拦截器、AOP等技术组件的详细信息。
 
 ### 基础信息
 - **Base URL**: `http://localhost:8080` (本地开发环境)
@@ -81,6 +81,18 @@
 | `totalPrice` | double | 总计金额 |
 | `userName` | String | 用户名 (冗余显示) |
 | `dishName` | String | 菜品名 (冗余显示) |
+
+### 3.5 操作日志 (OperateLog)
+| 字段 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `id` | Integer | 日志 ID |
+| `operateRstuserId` | Integer | 操作人用户ID |
+| `operateTime` | LocalDateTime | 操作时间 |
+| `className` | String | 操作的类名 |
+| `methodName` | String | 操作的方法名 |
+| `methodParams` | String | 方法参数 |
+| `returnValue` | String | 返回值 (JSON格式) |
+| `costTime` | Long | 方法执行耗时 (毫秒) |
 
 ---
 
@@ -225,6 +237,52 @@
 
 ---
 
+### 4.7 操作日志管理 (OperateLogController)
+
+#### 4.7.1 查询所有操作日志
+- **URL**: `/log/all`
+- **Method**: `GET`
+- **说明**: 返回系统中所有操作日志，按操作时间降序排列
+- **响应**: 
+  - 成功: 返回 `List<OperateLog>` 操作日志列表
+  - 失败: 返回错误信息
+
+#### 4.7.2 根据用户ID查询操作日志
+- **URL**: `/log/user/{rstuserId}`
+- **Method**: `GET`
+- **路径参数**:
+  - `rstuserId`: 用户ID
+- **说明**: 查询指定用户的所有操作日志，按操作时间降序排列
+- **响应**: 
+  - 成功: 返回 `List<OperateLog>` 该用户的操作日志列表
+  - 失败: 返回错误信息
+
+#### 4.7.3 分页查询操作日志
+- **URL**: `/log/page`
+- **Method**: `GET`
+- **请求参数**:
+  - `page` (可选, 默认1): 页码
+  - `pageSize` (可选, 默认10): 每页记录数
+- **说明**: 分页查询所有操作日志，按操作时间降序排列
+- **响应**: 
+  - 成功: 返回 `PageResult<OperateLog>` 对象，包含总记录数和当前页数据
+  - 失败: 返回错误信息
+
+#### 4.7.4 根据用户ID分页查询操作日志
+- **URL**: `/log/user/{rstuserId}/page`
+- **Method**: `GET`
+- **路径参数**:
+  - `rstuserId`: 用户ID
+- **请求参数**:
+  - `page` (可选, 默认1): 页码
+  - `pageSize` (可选, 默认10): 每页记录数
+- **说明**: 分页查询指定用户的操作日志，按操作时间降序排列
+- **响应**: 
+  - 成功: 返回 `PageResult<OperateLog>` 对象，包含该用户的总记录数和当前页数据
+  - 失败: 返回错误信息
+
+---
+
 ## 5. 前端调用建议 (Tips)
 
 1. **参数传递**:
@@ -272,6 +330,7 @@
   - 跳过登录接口的验证
   - 从请求头获取token并验证有效性
   - 验证失败返回401状态码
+  - 验证成功后将用户ID存储到ThreadLocal中（通过CurrentHolder）
   - 验证成功则放行请求
 
 #### 6.2.3 技术特点
@@ -290,6 +349,7 @@ AOP是Spring框架的核心特性之一，用于实现横切关注点的模块�
 | :--- | :--- | :--- | :--- |
 | `TestAspect` | 未启用 | 演示AOP各种通知类型 | `execution(* com.itheima.service.impl.*.*(..))` |
 | `RecordTimeAspect` | 已启用 | 记录方法执行时间 | `execution(* com.itheima.service.impl.*.*(..))` |
+| `OperateLogAspect` | 已启用 | 记录操作日志到数据库 | `@annotation(com.itheima.anno.LogOperation)` |
 
 #### 6.3.2 核心功能
 - **`RecordTimeAspect`**: 实现了方法执行时间监控
@@ -297,6 +357,14 @@ AOP是Spring框架的核心特性之一，用于实现横切关注点的模块�
   - 执行原始方法
   - 记录方法执行结束时间并计算耗时
   - 打印方法执行耗时日志
+
+- **`OperateLogAspect`**: 实现了操作日志自动记录
+  - 拦截所有带有 `@LogOperation` 注解的方法
+  - 从ThreadLocal中获取当前操作用户ID（通过CurrentHolder）
+  - 记录方法执行的类名、方法名、参数
+  - 记录方法返回值（JSON格式）和执行耗时
+  - 自动将操作日志保存到数据库
+  - 支持异常情况下的日志记录
 
 #### 6.3.3 技术特点
 - 使用 `@Aspect` 注解标记切面类
@@ -306,13 +374,18 @@ AOP是Spring框架的核心特性之一，用于实现横切关注点的模块�
 - 支持多种通知类型：`@Before`、`@After`、`@AfterReturning`、`@AfterThrowing`
 - 更适合处理日志记录、性能监控、事务管理等横切关注点
 
+#### 6.3.4 操作日志注解使用说明
+在需要记录操作日志的Controller方法上添加 `@LogOperation` 注解即可自动记录操作日志：
+
+系统会自动记录该方法的调用信息，包括操作人、操作时间、方法参数、返回值和执行耗时。
+
 ### 6.4 组件执行顺序
 
 当一个请求到达系统时，各组件的执行顺序如下：
 1. **过滤器 (Filter)** → 最先执行，在Servlet容器层面处理
-2. **拦截器 (Interceptor)** → 其次执行，在Spring MVC层面处理
+2. **拦截器 (Interceptor)** → 其次执行，在Spring MVC层面处理，验证JWT并将用户ID存入ThreadLocal
 3. **控制器 (Controller)** → 核心业务逻辑处理
-4. **AOP切面** → 包裹服务层方法执行
+4. **AOP切面** → 包裹服务层方法执行，记录操作日志和性能监控
 5. **服务层 (Service)** → 业务逻辑实现
 6. **数据访问层 (Mapper)** → 数据操作
 7. **AOP切面** → 服务方法执行后处理
@@ -327,8 +400,9 @@ AOP是Spring框架的核心特性之一，用于实现横切关注点的模块�
 3. 前端存储JWT令牌
 4. 后续请求在请求头中携带令牌
 5. **`TokenInterceptor`** 拦截请求并验证令牌
-   - 验证成功：放行请求
-   - 验证失败：返回401状态码
+    - 验证成功：解析用户ID并存储到ThreadLocal，放行请求
+    - 验证失败：返回401状态码
 6. 控制器处理业务逻辑
-7. **`RecordTimeAspect`** 监控服务方法执行性能
-8. 返回响应给前端
+7. **`OperateLogAspect`** 记录操作日志（从ThreadLocal获取用户ID）
+8. **`RecordTimeAspect`** 监控服务方法执行性能
+9. 返回响应给前端
